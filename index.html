@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API INTEGRATION</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    
+</head>
+<body>
+    <button id="clickbtn">Listing Title from API</button>
+    <button id="mapbtn">Find Name</button>
+    <div class="container">
+        <div id="res"></div>
+    </div>
+
+    <script>
+     
+document.getElementById('clickbtn').addEventListener('click',scriptfn);
+function scriptfn(){
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+    .then((result) => show(result))
+    .catch((err) => console.log(err));
+}
+
+function show(res){
+    let test=Array.from(res.data);
+    let htmlText = test.map(function(o){
+    return `
+      <div class="div-conatiner">
+      <p class="p-name"> User Id: ${o.userId}</p>
+      <p class="p-loc"> Id: ${o.id}</p>
+      <p class="p-desc"> Title: ${o.title}</p>
+      <p class="p-created"> Body: ${o.body}</p>
+     </div>
+  `;
+}).join('');
+    document.getElementById('res').innerHTML = htmlText;
+}
+document.getElementById('mapbtn').addEventListener('click',mergefn);
+
+function mergefn(){
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+    .then((result) => find(result))
+    .catch((err) => console.log(err));
+}
+
+
+function find(res){
+    let arrobj=Array.from(res.data);
+    let htmlText = arrobj.map(function(o){
+    return `
+      <div class="div-conatiner">
+      <p class="p-name"> Voluntier Name: ${findvol(o.id)}</p>
+      <p class="p-loc"> Work assignedd: ${findwork(o.id)}</p>
+     </div>
+  `;
+}).join('');
+document.getElementById('res').innerHTML = htmlText;
+}
+function findvol(id)
+{
+let val= axios.get('https://jsonplaceholder.typicode.com/posts')
+    .then((res) => {
+        let results=Array.from(res.data);
+        for(var i = 0; i < results.length; i += 1){
+            if(results[i].id === id){
+                 console.log(typeof results[i].title);
+                return JSON.parse(results[i].title);     
+
+             }
+        }
+    })
+    .catch((err) => console.log(err));
+    console.log(val);
+    return val;
+}
+function findwork(id)
+{
+    return id;
+}
+    </script>
+</body>
+</html>
