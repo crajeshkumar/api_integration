@@ -40,44 +40,46 @@ function show(res){
 document.getElementById('mapbtn').addEventListener('click',mergefn);
 
 function mergefn(){
+    document.getElementById('res').innerHTML='';
     axios.get('https://jsonplaceholder.typicode.com/posts')
     .then((result) => find(result))
     .catch((err) => console.log(err));
 }
-
-
 function find(res){
     let arrobj=Array.from(res.data);
-    let htmlText = arrobj.map(function(o){
-    return `
-      <div class="div-conatiner">
-      <p class="p-name"> Voluntier Name: ${findvol(o.id)}</p>
-      <p class="p-loc"> Work assignedd: ${findwork(o.id)}</p>
-     </div>
-  `;
-}).join('');
-document.getElementById('res').innerHTML = htmlText;
+    for(let i=0;i<arrobj.length;i++)
+    {
+        findvol(arrobj[i].id).then(name => {
+            document.getElementById('res').innerHTML += `
+           <p class="p-name"> Voluntier Name: ${name}</p>`
+        })
+        findwork(arrobj[i].userId).then(name => {
+            document.getElementById('res').innerHTML += `
+           <p class="p-name"> Assigned Work: ${name}</p>`
+        })
+    }
 }
-function findvol(id)
+async function findvol(id)
 {
-let val= axios.get('https://jsonplaceholder.typicode.com/posts')
-    .then((res) => {
-        let results=Array.from(res.data);
-        for(var i = 0; i < results.length; i += 1){
-            if(results[i].id === id){
-                 console.log(typeof results[i].title);
-                return JSON.parse(results[i].title);     
-
-             }
+    let val = await axios.get('https://jsonplaceholder.typicode.com/posts')
+    let data = Array.from(val.data);
+    for(var i=0;i<data.length;i+=1)
+    {
+        if(data[i].id===id){
+            return data[i].title;
         }
-    })
-    .catch((err) => console.log(err));
-    console.log(val);
-    return val;
+    }
 }
-function findwork(id)
+async function findwork(id)
 {
-    return id;
+    let val = await axios.get('https://jsonplaceholder.typicode.com/posts')
+    let data = Array.from(val.data);
+    for(var i=0;i<data.length;i+=1)
+    {
+        if(data[i].id===id){
+            return data[i].body;
+        }
+    }
 }
     </script>
 </body>
